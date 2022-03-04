@@ -1,10 +1,10 @@
 import numpy as np
 
 
-def rotation_matrix(roll, pitch, yaw):
+def rotationMatrix(roll, pitch, yaw):
     """
     Calculates rotation matrix from euler angles.
-    From horizon to body axes axes using Tait-Bryan angles.
+    From horizon to body axes using Tait-Bryan angles.
     """
     return np.array(
         [
@@ -25,3 +25,30 @@ def rotation_matrix(roll, pitch, yaw):
             ],
         ]
     ).T  # Transpose to get column vectors
+
+
+def rotationCamera2Horizon(vector):
+    """
+    Rotates vector from camera frame to horizon frame.
+    """
+    R = np.array(
+        [
+            [
+                0,
+                0,
+                1,
+            ],
+            [
+                -1,
+                0,
+                0,
+            ],
+            [
+                0,
+                -1,
+                0,
+            ],
+        ]
+    )
+
+    return R @ vector
