@@ -1,43 +1,13 @@
 import cv2
 import numpy as np
 
-LK_PARAMS = dict(
-    winSize=(7, 7),
-    maxLevel=5,
+lk_params = dict(
+    winSize=(21, 21),
+    # maxLevel = 3,
     criteria=(cv2.TERM_CRITERIA_EPS | cv2.TERM_CRITERIA_COUNT, 30, 0.01),
 )
 
-
-def findHomography(*args, **kwargs):
-    """cv2.findHomography() wrapper"""
-    h, msk = cv2.findHomography(*args, **kwargs)
-    if msk is not None:
-        msk = msk[:, 0].astype(np.bool)
-    return h, msk
-
-
-def findFundamental(*args, **kwargs):
-    """cv2.findFundamentalMat() wrapper"""
-    f, msk = cv2.findFundamentalMat(*args, **kwargs)
-    if msk is not None:
-        msk = msk[:, 0].astype(np.bool)
-    return f, msk
-
-
-def findEssential(F, camera):
-    """Compute Essential matrix from Fundamental Matrix"""
-    K = camera.intrinsics
-    E = K.T @ F @ K
-    return E
-
-
-def projectPoints(*args, **kwargs):
-    """cv2.projectPoints() wrapper"""
-    pt2, jac = cv2.projectPoints(*args, **kwargs)
-    return np.squeeze(pt2, axis=1)
-
-
-def correctMatches(F, points1, points2):
+def correct_matches(F, points1, points2):
     """Minimize the geometric error between corresponding image coordinates.
     For more information look into OpenCV's docs for the cv2.correctMatches function."""
 
@@ -50,7 +20,7 @@ def correctMatches(F, points1, points2):
     return newPoints1[0], newPoints2[0]
 
 
-def correctCameraDistorsion(points, camera):
+def correct_camera_distorsion(points, camera):
     """Correct camera distorsion using the camera calibration matrix"""
 
     print("correctCameraDistorsion1:", points.shape, points.dtype)
@@ -72,21 +42,14 @@ def correctCameraDistorsion(points, camera):
     return ud
 
 
-def featureTracking(image_last, image_new, px_last):
-    last = px_last.copy().astype(np.float32)
-    kp2, st, err = cv2.calcOpticalFlowPyrLK(
-        image_last, image_new, px_last, None, **LK_PARAMS
-    )  # shape: [k,2] [k,1] [k,1]
+def feature_tracking(image_ref, image_cur, px_ref):
+	kp2, st, _ = cv2.calcOpticalFlowPyrLK(image_ref, image_cur, px_ref, None, **lk_params)  #shape: [k,2] [k,1] [k,1]
 
-    st = st.reshape(st.shape[0])
-    kp1 = px_last[st == 1]
-    kp2 = kp2[st == 1]
+	st = st.reshape(st.shape[0])
+	kp1 = px_ref[st == 1]
+	kp2 = kp2[st == 1]
 
-    # kp1 = np.hstack((kp1, np.ones((kp1.shape[0], 1), dtype=np.float64)))
-    # kp2 = np.hstack((kp2, np.ones((kp2.shape[0], 1), dtype=np.float64)))
-    # [u, v, 1]
-
-    return kp1, kp2
+	return kp1, kp2
 
 
 def goodE(E):
