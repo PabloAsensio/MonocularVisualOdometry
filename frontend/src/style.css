@@ -1,60 +1,48 @@
-*
-{
-    margin: 0;
-    padding: 0;
-}
-
 html,
-body
-{
-    height: 100vh;
-    font-family: 'Poppins';
-    /* background: rgb(179, 172, 172); */
-    /* background: rgb(255, 255, 255); */
-    /* background: rgb(0, 0, 0); */
-    /* background: rgb(61, 60, 60); */
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 5px;
 }
 
-body{
-    overflow-x: hidden;
+body {
+    background-color: beige;
+    transform: perspective(1400px) matrix3d(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+    transform-style: preserve-3d;
 }
 
-.webgl
-{
-    position: fixed;
-    /* position: alsolute; */
-    top: 0;
-    left: 0;
+.content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0px;
+    top: 0px;
+}
+
+.image {
+    position: absolute;
+    top: 0px;
+    height: 29%;
+    transform-origin: 50% 50% 0px;
+    left: 15%;
+}
+
+.scene {
+    position: absolute;
+    /* transform-origin: 50% 50% 0px; */
+    top: 30%;
+    height: 70%;
+    width: 100%;
     outline: none;
     mix-blend-mode: exclusion;
 }
 
-.container{
-    height: 100vh;
-    display: grid;
-    place-items: center;
-}
-
-.text{
-    padding-left: 10% ;
-    width: 80%;
-    font-size: 1.5rem;
-    color: #fff;
-    text-align: left;
-    font-weight: bold;
-}
-
-h1{
-    font-size: 6rem;
-    text-transform: uppercase;
-    color: #fff;
-}
-
-h2{
-    font-size: 1.5rem;
-    color: #fff;
-}
-
-section{
-    height: 100vh;
+.webgl {
+    position: absolute;
+    top: 30%;
+    left: 1000;
+    outline: none;
+    mix-blend-mode: exclusion;
+    background-color: rgb(13, 170, 198);
 }

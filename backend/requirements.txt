@@ -1,5 +1,4 @@
 attrs==21.4.0
-black==22.1.0
 click==8.0.3
 iniconfig==1.1.1
 mypy-extensions==0.4.3

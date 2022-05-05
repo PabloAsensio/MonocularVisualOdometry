@@ -131,5 +131,6 @@ dmypy.json
 # VSCode
 .vscode
 
-# Datasets EDIT THIS LINE IF YOU NEED TO INCLUDE MORE FILES
-datasets/
+# Datasets EDIT THIS LINE IF YOU NEED TO INCLUDE MORE DIRS
+/datasets
+/tmp

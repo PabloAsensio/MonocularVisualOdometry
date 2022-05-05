@@ -1,21 +1,11 @@
 import numpy as np
-from src.read_euromav import read_euromav
-from src.read_kitti import read_kitti
+import yaml
+
 
 class PinholeCamera:  
-    def __init__(
-        self,
-        width=None,
-        height=None,
-        fu=None,
-        fv=None,
-        cu=None,
-        cv=None,
-        distortion_model=None,
-        distortion_coefficients=None,
-        extrinsics=None,
-        intrinsics=None,
-    ):
+    def __init__(self, width=None, height=None, fu=None, fv=None, cu=None, cv=None,
+        distortion_model=None, distortion_coefficients=None, extrinsics=None, intrinsics=None):
+
         self.width = width
         self.height = height
         self.fu = fu
@@ -55,34 +45,36 @@ class PinholeCamera:
         extrinsics = np.array(data["T_BS"]["data"]).reshape(4, 4)
         intrinsics = np.array(data["intrinsics"])
 
-        return cls(
-            width,
-            height,
-            fu,
-            fv,
-            cu,
-            cv,
-            distortion_model,
-            distortion_coefficients,
-            extrinsics,
-            intrinsics,
-        )
+        return cls(width, height, fu, fv, cu, cv, distortion_model, distortion_coefficients, extrinsics, intrinsics)
 
     @classmethod
     def from_kitti(cls, file_path, width, height):
         data = read_kitti(file_path)
 
-        width, height = width, height
         fu = float(data[0][1])
         fv = float(data[0][1])
         cu = float(data[0][3])
         cv = float(data[0][7])
 
-        return cls(
-            width,
-            height,
-            fu,
-            fv,
-            cu,
-            cv,
-        )
+        return cls(width, height, fu, fv, cu, cv)
+
+    @classmethod
+    def from_vkitti2(cls, file_path):
+        pass
+
+
+
+def read_euromav(file_path: str) -> list:
+    with open(file_path, "r") as f:
+        try:
+            data = yaml.load(f, Loader=yaml.FullLoader)
+        except yaml.YAMLError as exc:
+            print(exc)
+    return data
+
+def read_kitti(file_path: str) -> list:
+    with open(file_path, "r") as f:
+        lines = f.readlines()
+        for i in range(len(lines)):
+            lines[i] = lines[i].replace("\n", "").split(" ")
+        return lines
