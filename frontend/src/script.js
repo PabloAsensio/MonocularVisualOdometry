@@ -28,27 +28,16 @@ const canvas = document.querySelector('canvas.webgl')
 const scene = new THREE.Scene()
 
 /**
- * Meshes
+ * Grid
  */
+const grid = new THREE.GridHelper(1000, 100, 0x888888, 0x888888);
+grid.position.set(0, -0.1, 0);
+scene.add(grid);
 
-// Asphalt
-const asphaltMesh = new THREE.Mesh(
-    new THREE.PlaneGeometry(_MAP_WIDTH, _MAP_HEIGHT),
-    new THREE.MeshStandardMaterial({
-        color: 0x3d3c3c,
-        side: THREE.DoubleSide,
-        normalMap: normalTexture,
-        normalScale: new THREE.Vector2(0.5, 0.5),
-    })
-)
-
-asphaltMesh.rotation.x = -Math.PI / 2
-scene.add(asphaltMesh)
-
-
-export const frame = createFrame(1241, 356, 1, 0x00ff00);
-// frame.position.z = 1
-frame.position.y = 4
+/**
+ * Frame
+ */
+const frame = createFrame(1241, 356, 1, 0x00ff00);
 scene.add(frame)
 
 /**
@@ -116,7 +105,6 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
 /**
  * Tracker
  */
-
 function createTrack(track, color = 0xff0000) {
     const material = new THREE.LineBasicMaterial({ color: color, linewidth: 2 });
     const geometry = new THREE.BufferGeometry().setFromPoints(track.getPoints());
@@ -127,7 +115,6 @@ function createTrack(track, color = 0xff0000) {
 /**
  * Animate
  */
-
 let track = []
 let image_canvas = document.getElementById('image');
 const tracker = new CBuffer(ARRAY_LENGHT)
