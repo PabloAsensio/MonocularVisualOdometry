@@ -20,17 +20,22 @@ body {
     top: 0px;
 }
 
-.image {
-    position: absolute;
+.center {
+    margin: auto;
     top: 0px;
     height: 29%;
-    transform-origin: 50% 50% 0px;
-    left: 15%;
+    width: 70%;
+}
+
+.image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 100%;
 }
 
 .scene {
     position: absolute;
-    /* transform-origin: 50% 50% 0px; */
     top: 30%;
     height: 70%;
     width: 100%;
@@ -44,5 +49,5 @@ body {
     left: 1000;
     outline: none;
     mix-blend-mode: exclusion;
-    background-color: rgb(13, 170, 198);
+    background-color: rgba(13, 112, 198, 0.702);
 }
