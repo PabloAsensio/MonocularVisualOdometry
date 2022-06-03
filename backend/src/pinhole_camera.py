@@ -3,6 +3,7 @@ import yaml
 
 
 class PinholeCamera:  
+    
     def __init__(self, width=None, height=None, fu=None, fv=None, cu=None, cv=None,
         distortion_model=None, distortion_coefficients=None, extrinsics=None, intrinsics=None):
 
@@ -18,10 +19,13 @@ class PinholeCamera:
         self.intrinsics = intrinsics
         self.camera_matrix = self.cameraMatrix()
 
+
     def cameraMatrix(self):
         return np.array([[self.fu, 0, self.cu], [0, self.fv, self.cv], [0, 0, 1]])
 
+
     def print(self):
+        
         print("PinholeCamera:")
         print("  width:", self.width)
         print("  height:", self.height)
@@ -34,9 +38,15 @@ class PinholeCamera:
         print("  extrinsics:", self.extrinsics)
         print("  intrinsics:", self.intrinsics)
 
+
     @classmethod
-    def from_euromav(cls, file_path):
-        data = read_euromav(file_path)
+    def from_euromav(cls, file_path: str):
+
+        with open(file_path, "r") as f:
+            try:
+                data = yaml.load(f, Loader=yaml.FullLoader)
+            except yaml.YAMLError as exc:
+                print(exc)
 
         width, height = data["resolution"]
         fu, fv, cu, cv = data["intrinsics"]
@@ -47,9 +57,14 @@ class PinholeCamera:
 
         return cls(width, height, fu, fv, cu, cv, distortion_model, distortion_coefficients, extrinsics, intrinsics)
 
+
     @classmethod
-    def from_kitti(cls, file_path, width, height):
-        data = read_kitti(file_path)
+    def from_kitti(cls, file_path: str, width: int, height: int):
+
+        with open(file_path, "r") as f:
+            data = f.readlines()
+            for i in range(len(data)):
+                data[i] = data[i].replace("\n", "").split(" ")
 
         fu = float(data[0][1])
         fv = float(data[0][1])
@@ -58,23 +73,21 @@ class PinholeCamera:
 
         return cls(width, height, fu, fv, cu, cv)
 
+
     @classmethod
-    def from_vkitti2(cls, file_path):
-        pass
+    def from_vkitti2(cls, file_path: str, width: int, height: int, camera: int):
+        
+        with open(file_path, "r") as f:
+            lines = f.readlines()
+        
+        if camera == 0:
+            data = lines[1].replace("\n", "").split(" ")
+        else:
+            data = lines[2].replace("\n", "").split(" ")
+        
+        fu = float(data[2])
+        fv = float(data[3])
+        cu = float(data[4])
+        cv = float(data[5])
 
-
-
-def read_euromav(file_path: str) -> list:
-    with open(file_path, "r") as f:
-        try:
-            data = yaml.load(f, Loader=yaml.FullLoader)
-        except yaml.YAMLError as exc:
-            print(exc)
-    return data
-
-def read_kitti(file_path: str) -> list:
-    with open(file_path, "r") as f:
-        lines = f.readlines()
-        for i in range(len(lines)):
-            lines[i] = lines[i].replace("\n", "").split(" ")
-        return lines
+        return cls(width, height, fu, fv, cu, cv)
