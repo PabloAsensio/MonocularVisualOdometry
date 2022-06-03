@@ -12,14 +12,9 @@ async function decode_utf8(s) {
 /**
  * VARIABLES
  */
-const _MAP_WIDTH = 100
-const _MAP_HEIGHT = _MAP_WIDTH
 const ARRAY_LENGHT = 300
-
-
-// Loading
-const textureLoader = new THREE.TextureLoader()
-const normalTexture = textureLoader.load('/textures/AsphaltNormalMap.jpg')
+const USER_COLOR = 0xff0000 // Red
+const GT_COLOR = 0x00ff00 // Green
 
 // Canvas
 const canvas = document.querySelector('canvas.webgl')
@@ -37,8 +32,10 @@ scene.add(grid);
 /**
  * Frame
  */
-const frame = createFrame(1241, 356, 1, 0x00ff00);
+const frame = createFrame(1241, 356, 1, USER_COLOR);
 scene.add(frame)
+const frameGt = createFrame(1241, 356, 1, GT_COLOR);
+scene.add(frameGt)
 
 /**
  * Lights
@@ -112,12 +109,17 @@ function createTrack(track, color = 0xff0000) {
     return line
 }
 
+// const autocorrector = new Corrector();
+// autocorrector.correct()
+
 /**
  * Animate
  */
 let track = []
+let trackGT = []
 let image_canvas = document.getElementById('image');
 const tracker = new CBuffer(ARRAY_LENGHT)
+const trackerGt = new CBuffer(ARRAY_LENGHT)
 
 const socket = new WebSocket('ws://localhost:7890');
 socket.onopen = function (event) {
@@ -126,16 +128,25 @@ socket.onopen = function (event) {
 };
 socket.onmessage = async function (event) {
     let data = JSON.parse(event.data);
-    frame.position.x = data.pose.x * .1
-    frame.position.y = data.pose.y * .1
-    frame.position.z = data.pose.z * .1
+    frame.position.x = data.pose.x * 1.0
+    frame.position.y = data.pose.y * 1.0
+    frame.position.z = data.pose.z * 1.0
 
     tracker.push(frame.position.clone())
 
+    frameGt.position.x = data.poseGt.x * 1.0
+    frameGt.position.y = data.poseGt.y * 1.0
+    frameGt.position.z = data.poseGt.z * 1.0
+    trackerGt.push(frameGt.position.clone())
+
+
+
     if (!(track === [])) {
         scene.remove(track)
-        track = createTrack(tracker)
+        track = createTrack(tracker, USER_COLOR)
+        trackGT = createTrack(trackerGt, GT_COLOR)
         scene.add(track)
+        scene.add(trackGT)
     }
 
     // Parse Image Data

@@ -21,6 +21,7 @@ export function createFrame(width = 16, height = 9, scale = 1, color = 0xff0000)
     const center0 = [0, 0, 0]
 
     // scales
+    scale *= 10;
     const distance = .4 * scale
     height = (height / width) * scale
     width = scale

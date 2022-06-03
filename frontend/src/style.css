@@ -37,7 +37,7 @@ body {
 .scene {
     position: absolute;
     top: 30%;
-    height: 70%;
+    height: 50%;
     width: 100%;
     outline: none;
     mix-blend-mode: exclusion;
