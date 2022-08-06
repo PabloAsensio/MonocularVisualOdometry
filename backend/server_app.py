@@ -17,17 +17,22 @@ print("Server listening on Port " + str(PORT))
 
 async def monocular_visual_odometry(websocket, info: dict) -> int:
     try:
+
         if info['dataset'] == 'euromav':
+            print("From euromav")
             camera = PinholeCamera.from_euromav(info['calibration_file'])
             camera.print()
             vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
+        
         if info['dataset'] == 'kitti':
-            print("from kitti")
+            print("From kitti")
             camera = PinholeCamera.from_kitti(info['calibration_file'], width=1241, height=376)
             vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
-        
-        # camera = PinholeCamera(1242.0, 375.0, 725.0087, 725.0087, 620.5, 187.0)
-        # vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
+
+        if info['dataset'] == 'vkitti2':
+            print("From vkitti2")
+            camera = PinholeCamera.from_vkitti2(info['calibration_file'], width=1242, height=375, camera=0)
+            vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
 
         imgs, tss = load_images(info['images_path'])
 

@@ -36,7 +36,6 @@ def monocular_visual_odometry(info: dict) -> None:
     
     if info['dataset'] == 'kitti':
         camera = PinholeCamera.from_kitti(info['calibration_file'], width=1241, height=376)
-        # camera = PinholeCamera.from_kitti(info['calibration_file'], width=1226, height=370)
         vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
 
     if info['dataset'] == 'vkitti2':
@@ -48,8 +47,6 @@ def monocular_visual_odometry(info: dict) -> None:
 
     for img_id, img in tqdm(enumerate(imgs), desc="Progress", ascii=True, total=len(imgs)):
 
-        # print("####################")
-        # print("img_id: {}".format(img_id))
         vo.update(img, img_id)
 
         ### 

@@ -55,5 +55,5 @@ def get_absolute_scale_vkitti2(groundtruth: list, frame_id: int) -> tuple:
     z = float(ss["t3"])
     trueX, trueY, trueZ = x, y, z
 
-    # return (np.sqrt((x - x_prev) * (x - x_prev) + (y - y_prev) * (y - y_prev) + (z - z_prev) * (z - z_prev))), (trueX, trueY, trueZ)
-    return (0.8, (x, y, z))
+    return (np.sqrt((x - x_prev) * (x - x_prev) + (y - y_prev) * (y - y_prev) + (z - z_prev) * (z - z_prev))), (trueX, trueY, trueZ)
+    # return (0.8, (x, y, z))
