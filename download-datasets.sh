@@ -38,7 +38,7 @@ tar -xzf data_odometry_gray.zip
 tar -xzf data_odometry_poses.zip
 rm -rf ./*.zip
 
-Download VKITTI2 dataset
+# Download VKITTI2 dataset
 cd ~ || exit 1
 mkdir -p datasets/vkitti2 && cd datasets/vkitti2 || exit
 wget http://download.europe.naverlabs.com//virtual_kitti_2.0.3/vkitti_2.0.3_rgb.tar
