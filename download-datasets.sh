@@ -40,7 +40,12 @@ rm -rf ./*.zip
 
 # Download VKITTI2 dataset
 cd ~ || exit 1
-mkdir -p datasets/vkitti2 && cd datasets/vkitti2 || exit
+mkdir -p datasets/vkitti2/rgb && cd datasets/vkitti2/rgb || exit
 wget http://download.europe.naverlabs.com//virtual_kitti_2.0.3/vkitti_2.0.3_rgb.tar
 tar -xvf vkitti_2.0.3_rgb.tar >/dev/null 2>/dev/null
 rm -f vkitti_2.0.3_rgb.tar
+cd ..
+mkdir gt && cd gt || exit
+wget http://download.europe.naverlabs.com//virtual_kitti_2.0.3/vkitti_2.0.3_textgt.tar.gz
+tar -xvf vkitti_2.0.3_textgt.tar.gz >/dev/null 2>/dev/null
+rm -f vkitti_2.0.3_textgt.tar.gz
