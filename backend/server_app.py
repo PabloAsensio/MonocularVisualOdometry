@@ -19,22 +19,21 @@ async def monocular_visual_odometry(websocket, info: dict) -> int:
     try:
 
         if info['dataset'] == 'euromav':
-            print("From euromav")
+            print("From euromav".upper())
             camera = PinholeCamera.from_euromav(info['calibration_file'])
-            camera.print()
             vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
         
         if info['dataset'] == 'kitti':
-            print("From kitti")
+            print("From kitti".upper())
             camera = PinholeCamera.from_kitti(info['calibration_file'], width=1241, height=376)
             vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
 
         if info['dataset'] == 'vkitti2':
-            print("From vkitti2")
+            print("From vkitti2".upper())
             camera = PinholeCamera.from_vkitti2(info['calibration_file'], width=1242, height=375, camera=0)
             vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
 
-        imgs, tss = load_images(info['images_path'])
+        imgs, list_timestamps = load_images(info['images_path'])
 
         for img_id, img in tqdm(enumerate(imgs), desc="Progress", ascii=True, total=len(imgs)):
 
@@ -43,7 +42,7 @@ async def monocular_visual_odometry(websocket, info: dict) -> int:
                     pass
                 continue
 
-            vo.ts = tss[img_id]
+            vo.timestamp = list_timestamps[img_id]
             vo.update(img, img_id)
 
             message = await create_message(vo, img, img_id)

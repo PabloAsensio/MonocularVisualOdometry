@@ -128,12 +128,20 @@ socket.onopen = function (event) {
 };
 socket.onmessage = async function (event) {
     let data = JSON.parse(event.data);
+
+    console.log(data)
+
+    frame.rotation.x = data.pose.yaw
+    frame.rotation.y = data.pose.pitch
+    frame.rotation.z = data.pose.roll
     frame.position.x = data.pose.x * 1.0
     frame.position.y = data.pose.y * 1.0
     frame.position.z = data.pose.z * 1.0
-
     tracker.push(frame.position.clone())
 
+    frameGt.rotation.x = data.poseGt.yaw
+    frameGt.rotation.y = data.poseGt.pitch
+    frameGt.rotation.z = data.poseGt.roll
     frameGt.position.x = data.poseGt.x * 1.0
     frameGt.position.y = data.poseGt.y * 1.0
     frameGt.position.z = data.poseGt.z * 1.0

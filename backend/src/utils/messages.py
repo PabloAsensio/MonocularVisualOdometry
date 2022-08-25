@@ -17,27 +17,39 @@ async def create_message(vo: VisualOdometry, img: np.ndarray, img_id: int):
     if img_id > 2:
         x, y, z = cur_t[0][0], cur_t[1][0], cur_t[2][0]
         if vo.dataset == "kitti":
-            x, z = z, x
+            pass
+            # x, z = z, x
     else:
         x, y, z = 0.0, 0.0, 0.0
+
+    trueX = vo.true_t[0]
+    trueY = vo.true_t[1]
+    trueZ = vo.true_t[2]
+
+    trueYaw, truePitch, trueRoll = vo.get_true_euler_angles()
+    estimatedYaw, estimatedPitch, estimatedRoll = vo.get_estimated_euler_angles()
+
+    # print("\tImage id: ", img_id)
+    # print("\t\tTrue Angles: ", trueYaw, truePitch, trueRoll)
+    # print("\t\tEstimated Angles: ", estimatedYaw, estimatedPitch, estimatedRoll)
 
     message = {
         "img_id": img_id,
         "pose": {
-            "x": z,
-            "y": y,
-            "z": x,
-            # "yaw": vo.yaw,
-            # "pitch": vo.pitch,
-            # "roll": vo.roll
+            "x": str(z),
+            "y": str(y),
+            "z": str(x),
+            "yaw":   str(estimatedYaw),
+            "pitch": str(estimatedPitch),
+            "roll":  str(estimatedRoll)
         },
         "poseGt": {
-            "x": vo.trueX,
-            "y": vo.trueY,
-            "z": vo.trueZ,
-            # "yaw": vo.trueYaw,
-            # "pitch": vo.truePitch,
-            # "roll": vo.trueRoll
+            "x": str(trueX),
+            "y": str(trueY),
+            "z": str(trueZ),
+            "yaw":   str(trueYaw),
+            "pitch": str(truePitch),
+            "roll":  str(trueRoll)
         },
         "img_data": {
             "image": encode64(img),
