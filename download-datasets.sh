@@ -23,7 +23,7 @@ for ZIP in *.zip; do
     mkdir "${FOLDER}"
     mv "${ZIP}" "${FOLDER}"
     cd "${FOLDER}" || exit
-    tar -xzf "${ZIP}"
+    unzip "${ZIP}" >/dev/null 2>/dev/null
     # Delete zip
     rm -f "${ZIP}"
     cd ..
@@ -34,8 +34,8 @@ cd ~ || exit 1
 mkdir -p datasets/kitti && cd datasets/kitti || exit
 wget https://s3.eu-central-1.amazonaws.com/avg-kitti/data_odometry_gray.zip
 wget https://s3.eu-central-1.amazonaws.com/avg-kitti/data_odometry_poses.zip
-tar -xzf data_odometry_gray.zip
-tar -xzf data_odometry_poses.zip
+unzip data_odometry_gray.zip >/dev/null 2>/dev/null
+unzip data_odometry_poses.zip >/dev/null 2>/dev/null
 rm -rf ./*.zip
 
 # Download VKITTI2 dataset
