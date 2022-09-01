@@ -38,11 +38,10 @@ async def monocular_visual_odometry(websocket, info: dict) -> int:
         for img_id, img in tqdm(enumerate(imgs), desc="Progress", ascii=True, total=len(imgs)):
 
             if img_id == 0:
-                if vo.dataset == "VKITTI2":
-                    pass
                 continue
 
-            vo.timestamp = list_timestamps[img_id]
+            if vo.dataset == "eurocmav":
+                vo.timestamp = list_timestamps[img_id]
             vo.update(img, img_id)
 
             message = await create_message(vo, img, img_id)

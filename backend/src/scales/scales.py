@@ -31,7 +31,7 @@ def get_absolute_scale_euromav(groundtruth: list, list_timestamps:list, frame_id
     y_prev = float(ss[3])
     z_prev = float(ss[2])
 
-    timestamp = find_timestamp(list_timestamps, list_timestamps[frame_id + 1 ])
+    timestamp = find_timestamp(list_timestamps, list_timestamps[frame_id + 1])
     line = grep(timestamp, groundtruth)
 
     ss = line.split(',')
@@ -46,7 +46,11 @@ def get_absolute_scale_euromav(groundtruth: list, list_timestamps:list, frame_id
 
 def get_absolute_scale_vkitti2(groundtruth: list, frame_id: int) -> tuple:
 
+    if frame_id == 0:
+        return get_absolute_scale_vkitti2(groundtruth, 1)
+
     ss = groundtruth[groundtruth["frame"] == (frame_id - 1)]
+
     x_prev = float(ss["t1"])
     y_prev = float(ss["t2"])
     z_prev = float(ss["t3"])
