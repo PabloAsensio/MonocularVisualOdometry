@@ -51,7 +51,8 @@ class VisualOdometry:
         self.groundtruth = read_groundtruth(groundtruth_file, dataset)
         
         self.timestamp = None
-        self.tss_gt = None
+        self.frame_timestamps_list = None
+        self.timestamp_groundtruth_list = None
 
 
     def calculate_true_rotration(self, frame_id:int) -> None:
@@ -62,7 +63,7 @@ class VisualOdometry:
         if self.dataset == "vkitti2":
             pass
 
-        if self.dataset == "euromav":
+        if self.dataset == "eurocmav":
             pass  
 
     def calculate_absolute_scale(self, frame_id: int) -> float:
@@ -77,8 +78,8 @@ class VisualOdometry:
             self.true_t = truth
             return scale
 
-        if self.dataset == "euromav":
-            scale, truth = get_absolute_scale_euromav(self.groundtruth, self.tss_gt, frame_id)
+        if self.dataset == "eurocmav":
+            scale, truth = get_absolute_scale_euromav(self.groundtruth, self.timestamp_groundtruth_list , self.frame_timestamps_list, frame_id)
             self.true_t = truth
             return scale
 

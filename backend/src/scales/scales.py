@@ -21,9 +21,12 @@ def get_absolute_scale_kitti(groundtruth: list, frame_id: int) -> tuple:
     return (np.sqrt((x - x_prev) * (x - x_prev) + (y - y_prev) * (y - y_prev) + (z - z_prev) * (z - z_prev))), true_t
 
 
-def get_absolute_scale_euromav(groundtruth: list, list_timestamps:list, frame_id: int) -> tuple:
+def get_absolute_scale_euromav(groundtruth: list, timestamp_groundtruth_list: list, frame_timestamps_list:list, frame_id: int) -> tuple:
 
-    finded = find_timestamp(list_timestamps, list_timestamps[frame_id])
+    if frame_id == 0:
+        return 1., np.array([0., 0., 0.]).flatten()
+
+    finded = find_timestamp(timestamp_groundtruth_list, frame_timestamps_list[frame_id])
     line = grep(finded, groundtruth)
 
     ss = line.split(',')
@@ -31,7 +34,7 @@ def get_absolute_scale_euromav(groundtruth: list, list_timestamps:list, frame_id
     y_prev = float(ss[3])
     z_prev = float(ss[2])
 
-    timestamp = find_timestamp(list_timestamps, list_timestamps[frame_id + 1])
+    timestamp = find_timestamp(timestamp_groundtruth_list, frame_timestamps_list[frame_id + 1])
     line = grep(timestamp, groundtruth)
 
     ss = line.split(',')
