@@ -16,9 +16,6 @@ async def create_message(vo: VisualOdometry, img: np.ndarray, img_id: int):
     cur_t = vo.cur_t
     if img_id > 2:
         x, y, z = cur_t[0][0], cur_t[1][0], cur_t[2][0]
-        if vo.dataset == "kitti":
-            pass
-            # x, z = z, x
     else:
         x, y, z = 0.0, 0.0, 0.0
 
@@ -44,9 +41,9 @@ async def create_message(vo: VisualOdometry, img: np.ndarray, img_id: int):
             "roll":  str(estimatedRoll)
         },
         "poseGt": {
-            "x": str(trueX),
+            "x": str(trueZ),
             "y": str(trueY),
-            "z": str(trueZ),
+            "z": str(trueX),
             "yaw":   str(trueYaw),
             "pitch": str(truePitch),
             "roll":  str(trueRoll)
