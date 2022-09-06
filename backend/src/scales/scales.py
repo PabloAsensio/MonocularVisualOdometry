@@ -15,14 +15,18 @@ def get_absolute_scale_kitti(groundtruth: list, frame_id: int) -> tuple:
     x = float(ss[3])
     y = float(ss[7])
     z = float(ss[11])
-    trueX, trueY, trueZ = x, y, z
+    
+    true_t = np.array([x, y, z], dtype=np.float32).flatten().round(decimals=5)
 
-    return (np.sqrt((x - x_prev) * (x - x_prev) + (y - y_prev) * (y - y_prev) + (z - z_prev) * (z - z_prev))), (trueX, trueY, trueZ)
+    return (np.sqrt((x - x_prev) * (x - x_prev) + (y - y_prev) * (y - y_prev) + (z - z_prev) * (z - z_prev))), true_t
 
 
-def get_absolute_scale_euromav(groundtruth: list, tss:list, frame_id: int) -> tuple:
+def get_absolute_scale_euromav(groundtruth: list, timestamp_groundtruth_list: list, frame_timestamps_list:list, frame_id: int) -> tuple:
 
-    finded = find_timestamp(tss, tss[frame_id])
+    if frame_id == 0:
+        return 1., np.array([0., 0., 0.]).flatten()
+
+    finded = find_timestamp(timestamp_groundtruth_list, frame_timestamps_list[frame_id])
     line = grep(finded, groundtruth)
 
     ss = line.split(',')
@@ -30,21 +34,26 @@ def get_absolute_scale_euromav(groundtruth: list, tss:list, frame_id: int) -> tu
     y_prev = float(ss[3])
     z_prev = float(ss[2])
 
-    timestamp = find_timestamp(tss, tss[frame_id + 1 ])
+    timestamp = find_timestamp(timestamp_groundtruth_list, frame_timestamps_list[frame_id + 1])
     line = grep(timestamp, groundtruth)
 
     ss = line.split(',')
     x = float(ss[1])
     y = float(ss[3])
     z = float(ss[2])
-    trueX, trueY, trueZ = x, y, z
+    
+    true_t = np.array([x, y, z], dtype=np.float32).flatten().round(decimals=5)
 
-    return (np.sqrt((x - x_prev) * (x - x_prev) + (y - y_prev) * (y - y_prev) + (z - z_prev) * (z - z_prev))), (trueX, trueY, trueZ)
+    return (np.sqrt((x - x_prev) * (x - x_prev) + (y - y_prev) * (y - y_prev) + (z - z_prev) * (z - z_prev))), true_t
 
 
 def get_absolute_scale_vkitti2(groundtruth: list, frame_id: int) -> tuple:
 
+    if frame_id == 0:
+        return get_absolute_scale_vkitti2(groundtruth, 1)
+
     ss = groundtruth[groundtruth["frame"] == (frame_id - 1)]
+
     x_prev = float(ss["t1"])
     y_prev = float(ss["t2"])
     z_prev = float(ss["t3"])
@@ -53,7 +62,8 @@ def get_absolute_scale_vkitti2(groundtruth: list, frame_id: int) -> tuple:
     x = float(ss["t1"])
     y = float(ss["t2"])
     z = float(ss["t3"])
-    trueX, trueY, trueZ = x, y, z
 
-    return (np.sqrt((x - x_prev) * (x - x_prev) + (y - y_prev) * (y - y_prev) + (z - z_prev) * (z - z_prev))), (trueX, trueY, trueZ)
+    true_t = np.array([x, y, z], dtype=np.float32).flatten().round(decimals=5)
+
+    return (np.sqrt((x - x_prev) * (x - x_prev) + (y - y_prev) * (y - y_prev) + (z - z_prev) * (z - z_prev))), true_t
     # return (0.8, (x, y, z))

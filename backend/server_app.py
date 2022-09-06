@@ -8,6 +8,7 @@ import websockets
 from tqdm import tqdm
 
 from src import PinholeCamera, VisualOdometry
+from src.scales import read_eurocmav_timestamp_groundtruth
 from src.utils import create_message, load_images, send_message
 
 PORT = 7890
@@ -18,32 +19,35 @@ print("Server listening on Port " + str(PORT))
 async def monocular_visual_odometry(websocket, info: dict) -> int:
     try:
 
-        if info['dataset'] == 'euromav':
-            print("From euromav")
+        if info['dataset'] == 'eurocmav':
+            print("From eurocmav".upper())
             camera = PinholeCamera.from_euromav(info['calibration_file'])
-            camera.print()
             vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
         
         if info['dataset'] == 'kitti':
-            print("From kitti")
+            print("From kitti".upper())
             camera = PinholeCamera.from_kitti(info['calibration_file'], width=1241, height=376)
             vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
 
         if info['dataset'] == 'vkitti2':
-            print("From vkitti2")
+            print("From vkitti2".upper())
             camera = PinholeCamera.from_vkitti2(info['calibration_file'], width=1242, height=375, camera=0)
             vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
 
-        imgs, tss = load_images(info['images_path'])
+        imgs, list_timestamps = load_images(info['images_path'])
+
+        if vo.dataset == "eurocmav":
+            vo.frame_timestamps_list = list_timestamps
+            vo.timestamp_groundtruth_list = read_eurocmav_timestamp_groundtruth(info['ground_truth_file'])
 
         for img_id, img in tqdm(enumerate(imgs), desc="Progress", ascii=True, total=len(imgs)):
 
-            if img_id == 0:
-                if vo.dataset == "VKITTI2":
-                    pass
+            if img_id == 0 or img_id == len(imgs):
                 continue
 
-            vo.ts = tss[img_id]
+            if vo.dataset == "eurocmav":
+                vo.timestamp = list_timestamps[img_id]
+
             vo.update(img, img_id)
 
             message = await create_message(vo, img, img_id)

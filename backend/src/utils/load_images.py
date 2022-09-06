@@ -11,5 +11,8 @@ def load_images(imgs_path: str) -> list:
         img = cv2.imread(fn, 0)
         if img is not None:
             images.append(img)
-            ts.append( int(fn.split("/")[-1].split('.')[0]) )
+            try:
+                ts.append( int(fn.split("/")[-1].split('.')[0]) )
+            except:
+                pass
     return images, ts

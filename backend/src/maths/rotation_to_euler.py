@@ -17,7 +17,8 @@ def rotation2Euler(R):
     Calculates euler angles from rotation matrix.
     From horizon to body axes using Tait-Bryan angles.
     """
-    assert isRotationMatrix(R)
+
+    assert (isRotationMatrix(R), "Range of matrix is not 3.")
 
     sy = math.sqrt(R[0, 0] * R[0, 0] + R[1, 0] * R[1, 0])
 
