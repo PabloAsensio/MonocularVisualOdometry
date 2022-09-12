@@ -28,6 +28,9 @@ async def create_message(vo: VisualOdometry, img: np.ndarray, img_id: int):
             cur_t = ROTATION_CAMERA_TO_WORLD @ cur_t
             true_t = ROTATION_CAMERA_TO_WORLD @ true_t 
 
+        if vo.dataset == 'vkitti2':
+            cur_t = ROTATION_CAMERA_TO_WORLD @ cur_t
+
         x, y, z = cur_t[0][0], cur_t[1][0], cur_t[2][0]
 
     else:
