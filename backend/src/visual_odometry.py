@@ -46,6 +46,9 @@ class VisualOdometry:
         self.trueX, self.trueY, self.trueZ = 0, 0, 0
         self.true_R = np.zeros( shape=(3,3) )
         self.true_t = np.zeros((1,3))
+
+        self.init_R = None
+        self.init_t = None
         
         self.detector = cv2.FastFeatureDetector_create(threshold=25, nonmaxSuppression=True)
         self.groundtruth = read_groundtruth(groundtruth_file, dataset)
@@ -71,16 +74,22 @@ class VisualOdometry:
         if self.dataset == "kitti":
             scale, truth = get_absolute_scale_kitti(self.groundtruth, frame_id)
             self.true_t = truth
+            if self.frame_stage == 0:
+                self.init_t = truth
             return scale
         
         if self.dataset == "vkitti2":
             scale, truth = get_absolute_scale_vkitti2(self.groundtruth, frame_id)
             self.true_t = truth
+            if self.frame_stage == 0:
+                self.init_t = truth
             return scale
 
         if self.dataset == "eurocmav":
             scale, truth = get_absolute_scale_euromav(self.groundtruth, self.timestamp_groundtruth_list , self.frame_timestamps_list, frame_id)
             self.true_t = truth
+            if self.frame_stage == 0:
+                self.init_t = truth
             return scale
 
         print("Dataset not supported.")
