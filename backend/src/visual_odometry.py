@@ -2,12 +2,13 @@ import cv2
 import pandas as pd
 import numpy as np
 
-from .maths.cv_maths import feature_tracking
+from .maths.cv_maths import feature_tracking, goodE
 from .maths import rotation2Euler
 from .pinhole_camera import PinholeCamera
 from .scales import (get_absolute_scale_euromav, get_absolute_scale_kitti,
                      get_absolute_scale_vkitti2)
-from .scales import (get_true_rotation_kitti)
+from .scales import (get_true_rotation_eurocmav, get_true_rotation_kitti, 
+                     get_true_rotation_vkitti2)
 
 STAGE_FIRST_FRAME = 0
 STAGE_SECOND_FRAME = 1
@@ -62,12 +63,18 @@ class VisualOdometry:
 
         if self.dataset == "kitti":
             self.true_R = get_true_rotation_kitti(self.groundtruth, frame_id)
+            if self.frame_stage == 0:
+                self.init_R = self.true_R
 
         if self.dataset == "vkitti2":
-            pass
+            self.true_R = get_true_rotation_vkitti2(self.groundtruth, frame_id)
+            if self.frame_stage == 0:
+                self.init_R = self.true_R
 
         if self.dataset == "eurocmav":
-            pass  
+            self.true_R = get_true_rotation_eurocmav(self.groundtruth, self.timestamp_groundtruth_list , self.frame_timestamps_list, frame_id)
+            if self.frame_stage == 0:
+                self.init_R = self.true_R
 
     def calculate_absolute_scale(self, frame_id: int) -> float:
 
@@ -108,7 +115,9 @@ class VisualOdometry:
     def process_second_frame(self) -> None:
 
         self.px_ref, self.px_cur = feature_tracking(self.last_frame, self.new_frame, self.px_ref)
-        E, _ = cv2.findEssentialMat(self.px_cur, self.px_ref, focal=self.focal, pp=self.pp, method=cv2.RANSAC, prob=0.999, threshold=1.0)
+        E2, _ = cv2.findEssentialMat(self.px_cur, self.px_ref, focal=self.focal, pp=self.pp, method=cv2.RANSAC, prob=0.999, threshold=1.0)
+        E = goodE(E2)
+        morralla = E - E2
         _, self.cur_R, self.cur_t, _ = cv2.recoverPose(E, self.px_cur, self.px_ref, focal=self.focal, pp = self.pp)
         self.px_ref = self.px_cur
         _ = self.calculate_absolute_scale(1)
@@ -119,7 +128,9 @@ class VisualOdometry:
     def process_frame(self, frame_id: int) -> None:
 
         self.px_ref, self.px_cur = feature_tracking(self.last_frame, self.new_frame, self.px_ref)
-        E, _ = cv2.findEssentialMat(self.px_cur, self.px_ref, focal=self.focal, pp=self.pp, method=cv2.RANSAC, prob=0.999, threshold=1.0)
+        E2, _ = cv2.findEssentialMat(self.px_cur, self.px_ref, focal=self.focal, pp=self.pp, method=cv2.RANSAC, prob=0.999, threshold=1.0)
+        E = goodE(E2)
+        morralla = E - E2
         _, R, t, _ = cv2.recoverPose(E, self.px_cur, self.px_ref, focal=self.focal, pp = self.pp)
         absolute_scale = self.calculate_absolute_scale(frame_id)
         self.calculate_true_rotration(frame_id)
@@ -156,7 +167,7 @@ class VisualOdometry:
         self.last_frame = self.new_frame
 
     def get_true_euler_angles(self):
-        return rotation2Euler(self.true_R)
+        return rotation2Euler( np.linalg.inv(self.init_R) @ self.true_R )
 
     def get_estimated_euler_angles(self):
         return rotation2Euler(self.cur_R)
