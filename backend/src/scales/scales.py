@@ -3,7 +3,7 @@ import numpy as np
 from .grep import grep
 from .find_timestamp import find_timestamp
 
-def get_absolute_scale_euromav(groundtruth: list, timestamp_groundtruth_list: list, frame_timestamps_list:list, frame_id: int) -> tuple:
+def get_absolute_scale_eurocmav(groundtruth: list, timestamp_groundtruth_list: list, frame_timestamps_list:list, frame_id: int) -> tuple:
 
     if frame_id == 0:
         finded = find_timestamp(timestamp_groundtruth_list, frame_timestamps_list[0])

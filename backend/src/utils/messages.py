@@ -46,9 +46,8 @@ async def create_message(vo: VisualOdometry, img: np.ndarray, img_id: int):
 
         if vo.dataset == 'eurocmav':
             cur_t = ROTATION_CAMERA_TO_WORLD @ cur_t
-            tmpPosition = (true_t - vo.init_t)
             true_t = ROTATION_CAMERA_TO_WORLD @ (true_t - vo.init_t)
-            true_t *= 4
+            true_t *= 4 # scale
 
         x, y, z = cur_t[0][0], cur_t[1][0], cur_t[2][0]
 

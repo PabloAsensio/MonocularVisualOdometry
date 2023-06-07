@@ -5,7 +5,7 @@ import numpy as np
 from .maths.cv_maths import feature_tracking, goodE
 from .maths import rotation2Euler
 from .pinhole_camera import PinholeCamera
-from .scales import (get_absolute_scale_euromav, get_absolute_scale_kitti,
+from .scales import (get_absolute_scale_eurocmav, get_absolute_scale_kitti,
                      get_absolute_scale_vkitti2)
 from .scales import (get_true_rotation_eurocmav, get_true_rotation_kitti, 
                      get_true_rotation_vkitti2)
@@ -93,7 +93,7 @@ class VisualOdometry:
             return scale
 
         if self.dataset == "eurocmav":
-            scale, truth = get_absolute_scale_euromav(self.groundtruth, self.timestamp_groundtruth_list , self.frame_timestamps_list, frame_id)
+            scale, truth = get_absolute_scale_eurocmav(self.groundtruth, self.timestamp_groundtruth_list , self.frame_timestamps_list, frame_id)
             self.true_t = truth
             if self.frame_stage == 0:
                 self.init_t = truth
@@ -115,9 +115,7 @@ class VisualOdometry:
     def process_second_frame(self) -> None:
 
         self.px_ref, self.px_cur = feature_tracking(self.last_frame, self.new_frame, self.px_ref)
-        E2, _ = cv2.findEssentialMat(self.px_cur, self.px_ref, focal=self.focal, pp=self.pp, method=cv2.RANSAC, prob=0.999, threshold=1.0)
-        E = goodE(E2)
-        morralla = E - E2
+        E, _ = cv2.findEssentialMat(self.px_cur, self.px_ref, focal=self.focal, pp=self.pp, method=cv2.RANSAC, prob=0.999, threshold=1.0)
         _, self.cur_R, self.cur_t, _ = cv2.recoverPose(E, self.px_cur, self.px_ref, focal=self.focal, pp = self.pp)
         self.px_ref = self.px_cur
         _ = self.calculate_absolute_scale(1)
@@ -128,9 +126,7 @@ class VisualOdometry:
     def process_frame(self, frame_id: int) -> None:
 
         self.px_ref, self.px_cur = feature_tracking(self.last_frame, self.new_frame, self.px_ref)
-        E2, _ = cv2.findEssentialMat(self.px_cur, self.px_ref, focal=self.focal, pp=self.pp, method=cv2.RANSAC, prob=0.999, threshold=1.0)
-        E = goodE(E2)
-        morralla = E - E2
+        E, _ = cv2.findEssentialMat(self.px_cur, self.px_ref, focal=self.focal, pp=self.pp, method=cv2.RANSAC, prob=0.999, threshold=1.0)
         _, R, t, _ = cv2.recoverPose(E, self.px_cur, self.px_ref, focal=self.focal, pp = self.pp)
         absolute_scale = self.calculate_absolute_scale(frame_id)
         self.calculate_true_rotration(frame_id)
@@ -142,6 +138,13 @@ class VisualOdometry:
         if(self.px_ref.shape[0] < kMinNumFeature):
             self.px_cur = self.detector.detect(self.new_frame)
             self.px_cur = np.array([x.pt for x in self.px_cur], dtype=np.float32)
+
+        # # Fraw flow
+        # if self.new_frame is not None:
+            # for i in range(len(self.px_ref)):
+                # pt_ref = (int(self.px_ref[i][0]), int(self.px_ref[i][1]))
+                # pt_cur = (int(self.px_cur[i][0]), int(self.px_cur[i][1]))
+                # cv2.line(self.new_frame, pt_ref, pt_cur, (0, 255, 0), 1)
             
         self.px_ref = self.px_cur
 

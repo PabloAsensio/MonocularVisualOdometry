@@ -22,7 +22,7 @@ async def monocular_visual_odometry(websocket, info: dict) -> int:
 
     if info['dataset'] == 'eurocmav':
         print("From eurocmav".upper())
-        camera = PinholeCamera.from_euromav(info['calibration_file'])
+        camera = PinholeCamera.from_eurocmav(info['calibration_file'])
         vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
 
         vo.frame_timestamps_list = list_timestamps

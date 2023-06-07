@@ -27,10 +27,10 @@ def monocular_visual_odometry(info: dict) -> None:
 
     imgs = load_images(info['images_path'])
 
-    if info['dataset'] not in ['euromav', 'kitti', 'vkitti2']: print("Dataset not supported".upper()); exit(0)
+    if info['dataset'] not in ['eurocmav', 'kitti', 'vkitti2']: print("Dataset not supported".upper()); exit(0)
 
-    if info['dataset'] == 'euromav':
-        camera = PinholeCamera.from_euromav(info['calibration_file'])
+    if info['dataset'] == 'eurocmav':
+        camera = PinholeCamera.from_eurocmav(info['calibration_file'])
         vo = VisualOdometry(camera, info['ground_truth_file'], dataset=info['dataset'])
         vo.tss_gt = read_groundtruth_timestamp(info['ground_truth_file'])
     

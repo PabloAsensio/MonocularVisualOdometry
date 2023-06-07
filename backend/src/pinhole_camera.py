@@ -40,7 +40,7 @@ class PinholeCamera:
 
 
     @classmethod
-    def from_euromav(cls, file_path: str):
+    def from_eurocmav(cls, file_path: str):
 
         with open(file_path, "r") as f:
             try:
